@@ -10,7 +10,7 @@ import * as path from 'path';
 })
 export class AppRoutingModule implements OnModuleInit {
   async onModuleInit() {
-    console.log('App Routing Module Init');
+    console.log('App Routing Module Initilize');
   }
 
   static async forRootAsync(options: {

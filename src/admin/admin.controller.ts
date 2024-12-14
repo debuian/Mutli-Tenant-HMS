@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { BadGatewayException, Controller, Get } from '@nestjs/common';
 import { AdminService } from './admin.service';
 
 @Controller()
@@ -7,6 +7,7 @@ export class AdminController {
 
   @Get()
   async get() {
+    // throw new BadGatewayException();
     return 'Hello from Admin controller';
   }
 }

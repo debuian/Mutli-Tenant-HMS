@@ -2,10 +2,11 @@ import { Module, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { hotelModule } from './hotel/hotel.module';
-import { APP_FILTER, RouterModule } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, RouterModule } from '@nestjs/core';
 import { GobalExceptionFilter } from './common/exceptions/gobal-exception.filter';
 import { AdminModule } from './admin/admin.module';
 import { AppRoutingModule } from './app-routing.modules';
+import { GobalResponseInterceptor } from './common/interceptors/gobal-response.interceptor';
 
 @Module({
   imports: [
@@ -19,6 +20,10 @@ import { AppRoutingModule } from './app-routing.modules';
     {
       provide: APP_FILTER,
       useClass: GobalExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: GobalResponseInterceptor,
     },
   ],
 })

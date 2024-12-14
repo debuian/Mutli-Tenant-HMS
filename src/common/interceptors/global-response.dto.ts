@@ -1,4 +1,3 @@
-// src/common/dto/global-response.dto.ts
 export class GlobalResponse<T> {
   statusCode: number;
   message: string;

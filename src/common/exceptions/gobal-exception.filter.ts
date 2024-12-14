@@ -14,7 +14,6 @@ export class GobalExceptionFilter implements ExceptionFilter {
   constructor(private httpAdpaterHost: HttpAdapterHost) {}
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest<Request>();
     const resposne = ctx.getResponse<Response>();
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let msg = 'Internal Server Error';
@@ -29,6 +28,7 @@ export class GobalExceptionFilter implements ExceptionFilter {
       statusCode: status,
       message: msg,
     };
+    console.log('exception Filter', exception);
     httpAdapter.reply(resposne, responsePayload, status);
   }
 }
