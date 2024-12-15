@@ -3,32 +3,37 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
-  NotAcceptableException,
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { GlobalResponse } from './global-response.dto';
-import { log } from 'node:console';
+import { Request } from 'express';
 
 @Injectable()
-export class GobalResponseInterceptor<T> implements NestInterceptor<T, any> {
+export class GlobalResponseInterceptor<T> implements NestInterceptor<T, any> {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const cxt = context.switchToHttp();
-    const request = cxt.getRequest();
-    console.log(request.path);
+    const request = cxt.getRequest<Request>();
 
     return next.handle().pipe(
       map((data) => {
-        console.log(data);
         const status = cxt.getResponse().statusCode;
-        const message = 'Request successful'; // Customize the message if needed
-        return new GlobalResponse(status, message, data);
+        let { message, ...ControllerResponseData } = data;
+        if (!message) {
+          message = 'Request Successful';
+        }
+        const responsePayload: GlobalResponse<any> = {
+          success: true,
+          statusCode: status,
+          message: message,
+          data: [ControllerResponseData],
+          path: request.path,
+          error: {},
+        };
+        return responsePayload;
       }),
       catchError((err) => {
-        return throwError(() => {
-          console.log('Intercepot', err.status);
-          return new NotAcceptableException();
-        });
+        return throwError(() => err);
       }),
     );
   }
