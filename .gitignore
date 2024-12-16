@@ -3,6 +3,10 @@
 /node_modules
 /build
 
+# Ignore all files inside the migrations folder
+/database/migrations/*.ts
+# Track the migrations folder itself (keep the folder)
+!database/migrations/
 
 
 # Logs
