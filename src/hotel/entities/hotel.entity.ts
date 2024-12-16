@@ -10,7 +10,4 @@ export class Hotel {
 
   @Column()
   password: string;
-
-  // @Column()
-  // location: string;
 }
