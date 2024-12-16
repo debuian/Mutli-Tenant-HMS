@@ -1,18 +1,16 @@
-import {
-  Controller,
-  Get,
-  Inject,
-  Optional,
-  Req,
-  Request,
-} from '@nestjs/common';
-import { AppService } from 'src/app.service';
+import { Controller, Get, Request } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Hotel } from './entities/hotel.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Controller()
-export class hotelController {
-  constructor(@Optional() private appService: AppService) {}
+export class HotelController {
+  constructor(@InjectRepository(Hotel) private hotelRepo: Repository<Hotel>) {}
+
   @Get()
-  async getProfile(@Request() req) {
-    return 'Hello from hotel controller';
+  async getProfile() {
+    const data = await this.hotelRepo.find();
+    console.log(data);
+    return { hoteldata: data };
   }
 }

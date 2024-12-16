@@ -1,8 +1,8 @@
-import { hotelModule } from './hotel.module';
+import { HotelModule } from './hotel.module';
 
 export const HotelRoutes = [
   {
     path: 'hotel',
-    module: hotelModule,
+    module: HotelModule,
   },
 ];

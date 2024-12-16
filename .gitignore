@@ -3,6 +3,13 @@
 /node_modules
 /build
 
+# Ignore all files in the migrations folder
+/database/migrations/*
+
+# But don't ignore the migrations folder itself
+!database/migrations/
+
+
 # Logs
 logs
 *.log
