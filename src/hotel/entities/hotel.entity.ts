@@ -10,19 +10,4 @@ export class Hotel {
 
   @Column()
   password: string;
-
-  @Column()
-  location: string;
-
-  @Column()
-  Name: string;
-
-  @Column()
-  owner: string;
-
-  @Column()
-  Staff: string;
-
-  @Column()
-  abc: string;
 }

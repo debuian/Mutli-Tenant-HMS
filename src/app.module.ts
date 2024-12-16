@@ -14,11 +14,11 @@ import { DatabaseConfig } from './global/config';
   imports: [
     HotelModule,
     AppRoutingModule.forRootAsync({ fileExtension: 'routes.js' }),
-
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
       load: [DatabaseConfig],
+      envFilePath: '.env', // Ensure this points to your .env file
     }),
 
     TypeOrmModule.forRootAsync({

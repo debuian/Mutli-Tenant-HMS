@@ -1,11 +1,29 @@
 // src\global\config\database\dataSource.ts
-import { DataSource } from 'typeorm';
-import { DatabaseConfig } from '../index';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import { Inject } from '@nestjs/common';
+import { config } from 'dotenv';
+import { DatabaseConfig } from '..';
+config();
 
-const options = DatabaseConfig();
-const dataSource = new DataSource({
-  migrations: ['database/migrations/*{.ts,.js}'],
-  ...options, //list of migrations that need to be loaded by TypeORM
-});
+export class DataSourceConfig {
+  constructor(
+    @Inject(ConfigService) private readonly configService: ConfigService,
+  ) {}
 
-module.exports = dataSource;
+  getDataSourceOptions(): DataSourceOptions {
+    const options = DatabaseConfig();
+    return {
+      ...options,
+      migrations: ['database/migrations/*{.ts,.js}'],
+    };
+  }
+}
+
+const configService = new ConfigService({ load: [DatabaseConfig] });
+const dataSourceConfig = new DataSourceConfig(configService);
+const options = dataSourceConfig.getDataSourceOptions();
+console.log(options);
+const dataSource = new DataSource(options);
+
+export default dataSource;

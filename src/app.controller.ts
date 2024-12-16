@@ -6,12 +6,12 @@ import { ConfigService } from '@nestjs/config';
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly ConfigService: ConfigService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Get()
   getHello() {
-    const value = this.ConfigService.get('POSTGRES_HOST');
+    const value = this.configService.get('databaseConfig');
     console.log(value);
     return { data: 'hi' };
   }

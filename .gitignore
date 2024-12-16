@@ -4,7 +4,6 @@
 /build
 
 # Ignore all files in the migrations folder
-/database/migrations/*
 
 
 
