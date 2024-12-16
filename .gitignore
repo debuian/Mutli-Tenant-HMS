@@ -3,7 +3,11 @@
 /node_modules
 /build
 
-# Ignore all files in the migrations folder
+# Ignore all files inside the migrations folder
+/database/migrations/*
+
+# Track the migrations folder itself
+!database/migrations/
 
 
 
