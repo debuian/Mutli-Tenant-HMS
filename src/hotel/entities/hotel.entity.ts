@@ -22,4 +22,7 @@ export class Hotel {
 
   @Column()
   Staff: string;
+
+  @Column()
+  abc: string;
 }

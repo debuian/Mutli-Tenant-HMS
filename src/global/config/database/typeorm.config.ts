@@ -11,6 +11,5 @@ export default registerAs('databaseConfig', (): DataSourceOptions => {
     password: process.env.POSTGRES_PASSWORD || 'Maiya_$0980', // Use environment variable for password
     database: process.env.POSTGRES_DATABASE || 'MTHMS',
     entities: ['dist/**/*.entity{.ts,.js}'],
-    migrations: ['database/migrations/*{.ts,.js}'], //list of migrations that need to be loaded by TypeORM
   };
 });
