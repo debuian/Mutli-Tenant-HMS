@@ -5,8 +5,6 @@ import { HotelService } from 'src/hotel/hotel.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Hotel } from 'src/hotel/entities/hotel.entity';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './strategies/local.strategy';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
@@ -16,6 +14,6 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({ secret: 'abcd' }),
   ], // Provides access to the HotelRepository
   controllers: [AuthController],
-  providers: [AuthService, HotelService, LocalStrategy, LocalAuthGuard],
+  providers: [AuthService, HotelService],
 })
 export class AuthModule {}

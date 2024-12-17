@@ -18,34 +18,11 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 export class HotelRoomController {
   constructor(private readonly hotelRoomService: HotelRoomService) {}
 
-  @Post()
-  create(@Body() createHotelRoomDto: CreateHotelRoomDto) {
-    return this.hotelRoomService.create(createHotelRoomDto);
-  }
-
   @Get('room1')
   @UseGuards(JwtAuthGuard)
   findAll(@Request() req) {
     const data = req.user;
     console.log(data);
     return { hotelData: data };
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.hotelRoomService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateHotelRoomDto: UpdateHotelRoomDto,
-  ) {
-    return this.hotelRoomService.update(+id, updateHotelRoomDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.hotelRoomService.remove(+id);
   }
 }
