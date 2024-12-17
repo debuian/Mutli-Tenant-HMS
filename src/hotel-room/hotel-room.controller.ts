@@ -26,8 +26,9 @@ export class HotelRoomController {
   @Get('room1')
   @UseGuards(JwtAuthGuard)
   findAll(@Request() req) {
-    const dataa = req.user;
-    return { data: dataa };
+    const data = req.user;
+    console.log(data);
+    return { hotelData: data };
   }
 
   @Get(':id')

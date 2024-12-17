@@ -1,10 +1,5 @@
-import {
-  ExecutionContext,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
@@ -15,13 +10,6 @@ export class LocalAuthGuard extends AuthGuard('local') {
       return result as boolean;
     } catch (error) {
       console.error('Authentication error:', error);
-      // if (error instanceof NotFoundException) {
-      //   console.log(error.getResponse());
-      //   throw new NotFoundException('User Not Found', {
-      //     description: 'User with that email not FOund',
-      //     cause: 'Invalid email',
-      //   });
-      // }
       throw error;
     }
   }

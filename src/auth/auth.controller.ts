@@ -29,7 +29,6 @@ export class AuthController {
   }
 
   @Post('SignIn')
-  @UsePipes(ValidationPipe)
   @UseGuards(LocalAuthGuard)
   async SignIn(
     @Request() req,

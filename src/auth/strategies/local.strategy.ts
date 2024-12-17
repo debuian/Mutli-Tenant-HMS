@@ -16,9 +16,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     console.log('Validate method called with:', { email, password });
     try {
       const user = await this.authService.ValidateHotel({ email, password });
-
       console.log('Validation result:', user);
-      return user;
+      return { hotelId: user.id };
     } catch (error) {
       console.error('Validation error:', error);
       throw error;

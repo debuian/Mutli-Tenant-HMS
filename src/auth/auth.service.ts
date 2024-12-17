@@ -45,11 +45,17 @@ export class AuthService {
     const { email, password } = hotelLoginDto;
     const validUser = await this.hotelSerivce.checkUserExist(email);
     if (!validUser) {
-      throw new NotFoundException('User not Found');
+      throw new NotFoundException(`User with Email: ${email} doesn't Exist`, {
+        description: 'Authentication Failed',
+        cause: 'Email is not registered',
+      });
     }
     const isPasswordValid = await bcrypt.compare(password, validUser.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid password');
+      throw new UnauthorizedException('Invalid Password', {
+        description: 'Authentication Failed',
+        cause: 'Incorrect Password',
+      });
     }
     delete validUser.password;
     delete validUser.email;

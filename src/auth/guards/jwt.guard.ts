@@ -7,6 +7,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     try {
       const result = await super.canActivate(context);
       console.log('Authentication result:', result);
+      console.log('');
       return result as boolean;
     } catch (error) {
       console.error('Authentication error:', error);
@@ -14,7 +15,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         description: 'Invalid JWt Token',
         cause: [
           'No token Found inside Auth Header',
-          'Invalid Jwt Token Expried Token',
+          'Expried/ Invalid Jwt Token',
         ],
       });
     }
