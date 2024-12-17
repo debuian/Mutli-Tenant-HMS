@@ -9,10 +9,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HotelModule } from './hotel/hotel.module';
 import { DatabaseConfig } from './global/config';
+import { HotelRoomModule } from './hotel-room/hotel-room.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    HotelModule,
     AppRoutingModule.forRootAsync({ fileExtension: 'routes.js' }),
     ConfigModule.forRoot({
       cache: true,
@@ -27,6 +28,9 @@ import { DatabaseConfig } from './global/config';
       useFactory: (configService: ConfigService) =>
         configService.get('databaseConfig'),
     }),
+    HotelModule,
+    HotelRoomModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

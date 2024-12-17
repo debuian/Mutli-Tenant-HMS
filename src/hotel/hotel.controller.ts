@@ -1,16 +1,26 @@
-import { Controller, Get, Request } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { Hotel } from './entities/hotel.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import { HotelService } from './hotel.service';
+import { CreateHotelDto } from './dto/create-hotel.dto';
 
 @Controller()
 export class HotelController {
-  constructor(@InjectRepository(Hotel) private hotelRepo: Repository<Hotel>) {}
+  constructor(private readonly hotelSerivce: HotelService) {}
 
-  @Get()
-  async getProfile() {
-    const data = await this.hotelRepo.find();
-    console.log(data);
-    return { hoteldata: data };
+  @Post('SignUp')
+  @UsePipes(ValidationPipe)
+  async SignUp(@Body() createHotelDto: CreateHotelDto) {
+    const result = await this.hotelSerivce.create(createHotelDto);
+    const { password, ...hotelInfo } = result;
+    return {
+      message: `${createHotelDto.email} logged in succesfully`,
+      hotelInfo,
+    };
   }
 }

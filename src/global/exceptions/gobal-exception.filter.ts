@@ -6,42 +6,47 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
 import { GlobalResponse } from '../interceptors/global-response.dto';
 
 @Catch()
 export class GobalExceptionFilter implements ExceptionFilter {
   constructor(private httpAdpaterHost: HttpAdapterHost) {}
   catch(exception: any, host: ArgumentsHost) {
+    console.log(exception);
     const ctx = host.switchToHttp();
     const resposne = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
     let defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    let defaultMessage = 'Internal Server Error';
+    let defaultMessage: string = 'Internal Server Error';
     let defaultOptions: { description: string; cause: string | string[] } = {
-      description: '',
-      cause: '',
+      description: 'A default description',
+      cause: ['An array of unknown error occurred'],
     };
-    //Checking for  instanceof HttpException
+
     if (exception instanceof HttpException) {
       defaultStatus = exception.getStatus();
       defaultMessage = exception.message;
+      const errorResponse = exception.getResponse();
+      if (typeof errorResponse === 'object' && 'error' in errorResponse) {
+        defaultOptions.description = errorResponse.error as string;
+      }
+      if (typeof errorResponse === 'object' && 'message' in errorResponse) {
+        defaultOptions.cause = errorResponse.message as string[];
+      }
     }
-    // Checking for options obj in exception if it is there and attatch it
     if (
       exception.options != undefined &&
       Object.keys(exception.options).length > 0
     ) {
       defaultOptions = exception.options;
     }
-
     const { httpAdapter } = this.httpAdpaterHost;
 
     const APIErrorObject = {
       name: exception.name,
       status: exception.status || defaultStatus,
-      message: exception.message || defaultMessage,
       options: defaultOptions,
     };
 
