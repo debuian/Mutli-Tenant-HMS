@@ -8,21 +8,36 @@ import {
   Delete,
   UseGuards,
   Request,
+  UsePipes,
+  ValidationPipe,
+  UseFilters,
 } from '@nestjs/common';
 import { HotelRoomService } from './hotel-room.service';
 import { CreateHotelRoomDto } from './dto/create-hotel-room.dto';
 import { UpdateHotelRoomDto } from './dto/update-hotel-room.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { QueryExceptionFilter } from 'src/global/exceptions/query-exception.filter';
 
 @Controller('hotel-room')
 export class HotelRoomController {
   constructor(private readonly hotelRoomService: HotelRoomService) {}
 
-  @Get('room1')
-  @UseGuards(JwtAuthGuard)
-  findAll(@Request() req) {
-    const data = req.user;
-    console.log(data);
-    return { hotelData: data };
+  @Post('CreateRoom')
+  // @UseGuards(JwtAuthGuard)
+  @UsePipes(ValidationPipe)
+  async CreateRoom(
+    @Request() req,
+    @Body() createHotelRoomDto: CreateHotelRoomDto,
+  ) {
+    // const hotelData = req.user;
+    // const HotelId = hotelData.HotelId;
+    const HotelId = 5;
+
+    createHotelRoomDto.hotelId = HotelId;
+
+    console.log(createHotelRoomDto);
+    const result = await this.hotelRoomService.create(createHotelRoomDto);
+
+    return { message: 'Created', data: result };
   }
 }

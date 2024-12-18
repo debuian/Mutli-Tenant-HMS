@@ -1,11 +1,15 @@
 import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { HotelRoom } from 'src/hotel-room/entities/hotelRoom.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 
-@Entity()
+@Entity('Hotels')
 export class Hotel extends GobalBaseEntity {
   @Column()
   email: string;
 
   @Column()
   password: string;
+
+  @OneToMany(() => HotelRoom, (hotelRoom) => hotelRoom.hotel)
+  hotelRooms: HotelRoom[];
 }

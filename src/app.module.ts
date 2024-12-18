@@ -11,6 +11,7 @@ import { HotelModule } from './hotel/hotel.module';
 import { DatabaseConfig } from './global/config';
 import { HotelRoomModule } from './hotel-room/hotel-room.module';
 import { AuthModule } from './auth/auth.module';
+import { QueryExceptionFilter } from './global/exceptions/query-exception.filter';
 
 @Module({
   imports: [

@@ -1,26 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { CreateHotelRoomDto } from './dto/create-hotel-room.dto';
 import { UpdateHotelRoomDto } from './dto/update-hotel-room.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HotelRoom } from './entities/hotelRoom.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class HotelRoomService {
-  create(createHotelRoomDto: CreateHotelRoomDto) {
-    return 'This action adds a new hotelRoom';
-  }
+  constructor(
+    @InjectRepository(HotelRoom)
+    private readonly hotelRoomRepo: Repository<HotelRoom>,
+  ) {}
 
-  findAll() {
-    return `This action returns all hotelRoom`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} hotelRoom`;
-  }
-
-  update(id: number, updateHotelRoomDto: UpdateHotelRoomDto) {
-    return `This action updates a #${id} hotelRoom`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} hotelRoom`;
+  async create(createHotelRoomDto: CreateHotelRoomDto) {
+    const newHotelRoom = await this.hotelRoomRepo.create(createHotelRoomDto);
+    const hotelRoomInfo = await this.hotelRoomRepo.save(newHotelRoom);
+    return hotelRoomInfo;
   }
 }

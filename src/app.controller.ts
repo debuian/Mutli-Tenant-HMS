@@ -12,8 +12,8 @@ export class AppController {
 
   @Get('error')
   getError() {
-    // throw new Error('Jus an Error');
-    throw new BadRequestException();
+    throw new Error('Jus an Error');
+    // throw new BadRequestException();
     throw new BadRequestException(
       'An user friendly message that could be sent to frontend or user',
     );
