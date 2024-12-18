@@ -1,10 +1,8 @@
+import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Hotel {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Hotel extends GobalBaseEntity {
   @Column()
   email: string;
 

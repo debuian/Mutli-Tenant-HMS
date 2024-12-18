@@ -51,9 +51,9 @@ src
 
 ```bash
 # Generate Migrations inside database/migrations at root level
-$ pnpm run migration:generate --name= <MigrationName>
+$ npm run migration:generate --name=<MigartionName>
 
 # Running Migrations
-$ pnpm run migration:run
+$ npm run migration:run
 
 ```
