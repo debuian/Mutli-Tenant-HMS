@@ -35,7 +35,6 @@ export class HotelRoomController {
     createHotelRoomDto.hotelId = HotelId;
     console.log(createHotelRoomDto);
     const result = await this.hotelRoomService.create(createHotelRoomDto);
-
     return { message: 'Created', data: result };
   }
 }

@@ -6,12 +6,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Hotel } from 'src/hotel/entities/hotel.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Hotel]),
     PassportModule,
-    JwtModule.register({ secret: 'abcd' }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+    }),
   ], // Provides access to the HotelRepository
   controllers: [AuthController],
   providers: [AuthService, HotelService],

@@ -1,18 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
+import { ExceptionHelperResponse } from './exceptionHelperResponse';
 
-interface HttpExceptionResponse {
-  message: string;
-  error: {
-    name: string;
-    status: number;
-    options: {
-      description: string;
-      cause: string | string[];
-    };
-  };
-}
-
-export function HttpExceptionFilter(exception): HttpExceptionResponse {
+export function formatHttpException(exception): ExceptionHelperResponse {
   let defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
   let defaultMessage = 'An error occurred while processing the query';
   let defaultOptions: { description: string; cause: string | string[] } = {

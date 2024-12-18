@@ -1,21 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
+import { ExceptionHelperResponse } from './exceptionHelperResponse';
 
 // Define the structure of the return object
-interface QueryExceptionResponse {
-  statusCode: number;
-  message: string;
-  error: {
-    name: string;
-    status: number;
-    options: {
-      description: string;
-      cause: string | string[];
-    };
-  };
-}
 
-export function QueryExceptionFilter(exception): QueryExceptionResponse {
+export function formatQueryException(exception): ExceptionHelperResponse {
   let defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
   let defaultMessage = 'An error occurred while processing the query';
   let defaultOptions: { description: string; cause: string | string[] } = {
@@ -43,7 +32,6 @@ export function QueryExceptionFilter(exception): QueryExceptionResponse {
   }
 
   return {
-    statusCode: defaultStatus,
     message: defaultMessage,
     error: {
       name: exception.name,

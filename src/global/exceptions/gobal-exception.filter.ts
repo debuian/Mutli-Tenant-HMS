@@ -8,9 +8,9 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 import { Request, Response } from 'express';
 import { GlobalResponse } from '../interceptors/global-response.dto';
-import { QueryFailedError, TypeORMError } from 'typeorm';
-import { QueryExceptionFilter } from './query-exception.filter';
-import { HttpExceptionFilter } from './http-exception.filter';
+import { QueryFailedError } from 'typeorm';
+import { formatQueryException } from './helper/query-exception.helper';
+import { formatHttpException } from './helper/http-exception.helper';
 
 @Catch()
 export class GobalExceptionFilter implements ExceptionFilter {
@@ -41,14 +41,13 @@ export class GobalExceptionFilter implements ExceptionFilter {
     };
 
     if (exception instanceof HttpException) {
-      const httpErrorOptions = HttpExceptionFilter(exception);
-      console.log(httpErrorOptions);
+      const httpErrorOptions = formatHttpException(exception);
       defaultMessage = httpErrorOptions.message;
       APIErrorObject = httpErrorOptions.error;
     }
 
     if (exception instanceof QueryFailedError) {
-      const options = QueryExceptionFilter(exception);
+      const options = formatQueryException(exception);
       defaultMessage = options.message;
       APIErrorObject = options.error;
     }
@@ -64,7 +63,6 @@ export class GobalExceptionFilter implements ExceptionFilter {
       path: request.path,
       error: APIErrorObject,
     };
-    // console.log(responsePayload);
     httpAdapter.reply(resposne, responsePayload, defaultStatus);
   }
 }
