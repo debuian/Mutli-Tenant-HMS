@@ -22,7 +22,6 @@ export class AuthController {
   async SignUp(@Body() hotelLoginDto: HotelLoginDto) {
     const result = await this.authService.SignUp(hotelLoginDto);
     console.log(result);
-    // delete result.password;
     return {
       message: `${hotelLoginDto.email} logged in succesfully`,
       result,
@@ -36,6 +35,7 @@ export class AuthController {
     @Body() hotelLoginDto: HotelLoginDto,
   ) {
     const hotelInfo = await this.authService.ValidateHotel(hotelLoginDto);
+    console.log(hotelInfo.password);
     const payload = { hotelId: hotelInfo.id };
     const { accessToken, refreshToken } =
       await this.authService.SignIn(payload);

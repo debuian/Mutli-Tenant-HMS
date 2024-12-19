@@ -9,6 +9,5 @@ export class CreateHotelDto {
 
   @IsString()
   @IsNotEmpty({ message: 'Tero bau password empty xa' })
-  @Exclude()
   password: string;
 }

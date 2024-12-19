@@ -8,6 +8,7 @@ import { HotelService } from 'src/hotel/hotel.service';
 import { HotelLoginDto } from './dto/Hotellogin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Hotel } from 'src/hotel/entities/hotel.entity';
 
 @Injectable()
 export class AuthService {
@@ -51,24 +52,24 @@ export class AuthService {
     };
   }
 
-  async ValidateHotel(hotelLoginDto: HotelLoginDto) {
+  async ValidateHotel(hotelLoginDto: HotelLoginDto): Promise<Hotel> {
     const { email, password } = hotelLoginDto;
-    const validUser = await this.hotelSerivce.checkHotelExist(email);
-    if (!validUser) {
+    const validHotel = await this.hotelSerivce.checkHotelExist(email);
+    if (!validHotel) {
       throw new NotFoundException(`User with Email: ${email} doesn't Exist`, {
         description: 'Authentication Failed',
         cause: 'Email is not registered',
       });
     }
-    const isPasswordValid = await bcrypt.compare(password, validUser.password);
+    const isPasswordValid = await bcrypt.compare(password, validHotel.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid Password', {
         description: 'Authentication Failed',
         cause: 'Incorrect Password',
       });
     }
-    delete validUser.password;
-    delete validUser.email;
-    return validUser;
+    delete validHotel.password;
+    delete validHotel.email;
+    return validHotel;
   }
 }
