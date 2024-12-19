@@ -13,7 +13,7 @@ export class HotelRoom extends GobalBaseEntity {
   })
   hotel: Hotel;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   hotelId: number;
 
   @Column({ default: 'Available ' })

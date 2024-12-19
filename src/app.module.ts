@@ -19,7 +19,7 @@ import { AuthModule } from './auth/auth.module';
       cache: true,
       isGlobal: true,
       load: [DatabaseConfig],
-      envFilePath: '.env', // Ensure this points to your .env file
+      envFilePath: '.env',
     }),
 
     TypeOrmModule.forRootAsync({

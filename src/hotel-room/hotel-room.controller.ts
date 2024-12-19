@@ -1,23 +1,17 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseGuards,
   Request,
   UsePipes,
   ValidationPipe,
-  UseFilters,
 } from '@nestjs/common';
 import { HotelRoomService } from './hotel-room.service';
 import { CreateHotelRoomDto } from './dto/create-hotel-room.dto';
-import { UpdateHotelRoomDto } from './dto/update-hotel-room.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
-@Controller('hotel-room')
+@Controller()
 export class HotelRoomController {
   constructor(private readonly hotelRoomService: HotelRoomService) {}
 
@@ -29,9 +23,12 @@ export class HotelRoomController {
     @Body() createHotelRoomDto: CreateHotelRoomDto,
   ) {
     const hotelData = req.user;
-    const HotelId = hotelData.HotelId;
+    console.log(hotelData);
+    const HotelId = hotelData.hotelId;
     // Creating error for referance
-    // const HotelId = 5;
+    //**************** */ error hotel Td can be null ******************** solve
+    // Error formating left for referance
+    // const HotelId = null;
     createHotelRoomDto.hotelId = HotelId;
     console.log(createHotelRoomDto);
     const result = await this.hotelRoomService.create(createHotelRoomDto);
