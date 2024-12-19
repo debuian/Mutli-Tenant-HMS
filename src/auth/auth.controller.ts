@@ -1,8 +1,10 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Post,
   Res,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,10 +17,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('SignUp')
+  @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(ValidationPipe)
   async SignUp(@Body() hotelLoginDto: HotelLoginDto) {
     const result = await this.authService.SignUp(hotelLoginDto);
-    delete result.password;
+    console.log(result);
+    // delete result.password;
     return {
       message: `${hotelLoginDto.email} logged in succesfully`,
       result,

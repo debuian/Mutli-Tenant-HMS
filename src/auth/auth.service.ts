@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -16,7 +17,16 @@ export class AuthService {
   ) {}
 
   async SignUp(hotelLoginDto: HotelLoginDto) {
-    const hotelInfo = await this.hotelSerivce.create(hotelLoginDto);
+    let { email, password } = hotelLoginDto;
+    const userExist = await this.hotelSerivce.checkHotelExist(email);
+    if (userExist) {
+      throw new ConflictException('A hotel with this email already exists');
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const hotelInfo = await this.hotelSerivce.create({
+      ...hotelLoginDto,
+      password: hashedPassword,
+    });
     return hotelInfo;
   }
 
@@ -43,7 +53,7 @@ export class AuthService {
 
   async ValidateHotel(hotelLoginDto: HotelLoginDto) {
     const { email, password } = hotelLoginDto;
-    const validUser = await this.hotelSerivce.checkUserExist(email);
+    const validUser = await this.hotelSerivce.checkHotelExist(email);
     if (!validUser) {
       throw new NotFoundException(`User with Email: ${email} doesn't Exist`, {
         description: 'Authentication Failed',

@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
 import { HotelRoom } from 'src/hotel-room/entities/hotelRoom.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
@@ -8,6 +9,7 @@ export class Hotel extends GobalBaseEntity {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @OneToMany(() => HotelRoom, (hotelRoom) => hotelRoom.hotel)
