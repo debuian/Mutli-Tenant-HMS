@@ -57,3 +57,17 @@ $ npm run migration:generate --name=<MigartionName>
 $ npm run migration:run
 
 ```
+
+## Environment Variables
+
+The following environment variables need to be set in your `.env` file for the application to run correctly:
+
+- `APP_PORT`
+- `POSTGRES_HOST`
+- `POSTGRES_PORT`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DATABASE`
+- `JWT_SECRET`
+
+Ensure you create a `.env` file in the root of your project and set these variables accordingly.
