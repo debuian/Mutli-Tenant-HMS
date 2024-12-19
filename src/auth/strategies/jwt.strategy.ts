@@ -17,7 +17,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     console.log('Inside JWT Strategy Validate Method');
     console.log('Payload:', payload);
     console.log('Authenticated User ID:', payload.payload.hotelId);
-
     return { HotelId: payload.payload.hotelId };
   }
 }
