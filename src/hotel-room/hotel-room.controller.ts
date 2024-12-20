@@ -20,7 +20,6 @@ export class HotelRoomController {
   @Post('CreateRoom')
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
-  @UseInterceptors(ClassSerializerInterceptor)
   async CreateRoom(
     @Request() req,
     @Body() createHotelRoomDto: CreateHotelRoomDto,
@@ -34,6 +33,6 @@ export class HotelRoomController {
     createHotelRoomDto.hotelId = HotelId;
     console.log(createHotelRoomDto);
     const result = await this.hotelRoomService.create(createHotelRoomDto);
-    return { message: 'Created', data: result };
+    return { message: 'Hotel Room created Succesfully', HotelRoomInfo: result };
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateHotelRoomReservationDto } from './dto/create-hotel-room-reservation.dto';
 import { UpdateHotelRoomReservationDto } from './dto/update-hotel-room-reservation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,6 +27,13 @@ export class HotelRoomReservationsService {
     const hotelGuest = await this.HotelGuestsService.findById(
       createHotelRoomReservationDto.hotelGuestId,
     );
+    console.log(hotel, hotelRoom, hotelGuest);
+    if (hotelRoom.status != 'Available ') {
+      throw new ConflictException(`The room  is not available. `, {
+        description: 'Room Status Conflict',
+        cause: `Room with ${hotelRoom.id} has status ${hotelRoom.status}`,
+      });
+    }
 
     const newReservation = this.hotelRoomreservationRepo.create({
       hotel,

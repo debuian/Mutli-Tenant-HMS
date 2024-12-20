@@ -9,12 +9,14 @@ import { HotelLoginDto } from './dto/Hotellogin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Hotel } from 'src/hotel/entities/hotel.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly hotelSerivce: HotelService,
     private readonly jwtService: JwtService,
+    private readonly conifgService: ConfigService,
   ) {}
 
   async SignUp(hotelLoginDto: HotelLoginDto) {
@@ -35,14 +37,18 @@ export class AuthService {
     const accessToken = await this.jwtService.sign(
       { payload },
       {
-        expiresIn: '5m',
+        expiresIn: this.conifgService.get<number>(
+          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+        ),
       },
     );
 
     const refreshToken = await this.jwtService.sign(
       { payload },
       {
-        expiresIn: '7d',
+        expiresIn: this.conifgService.get<number>(
+          'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+        ),
       },
     );
 

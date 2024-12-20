@@ -13,15 +13,13 @@ import { HotelLoginDto } from './dto/Hotellogin.dto';
 import { response, Response } from 'express';
 
 @Controller()
+@UsePipes(ValidationPipe)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('SignUp')
-  @UseInterceptors(ClassSerializerInterceptor)
-  @UsePipes(ValidationPipe)
   async SignUp(@Body() hotelLoginDto: HotelLoginDto) {
     const result = await this.authService.SignUp(hotelLoginDto);
-    console.log(result);
     return {
       message: `${hotelLoginDto.email} logged in succesfully`,
       result,
@@ -29,7 +27,6 @@ export class AuthController {
   }
 
   @Post('SignIn')
-  @UsePipes(ValidationPipe)
   async SignIn(
     @Res({ passthrough: true }) response: Response,
     @Body() hotelLoginDto: HotelLoginDto,
@@ -45,12 +42,8 @@ export class AuthController {
     });
 
     return {
-      success: true,
-      statusCode: 201,
       message: 'Hotel Logged in successfully',
-      data: [{ accessToken }],
-      path: '/hotel/auth/SignIn',
-      error: {},
+      LoggedInfo: { accessToken },
     };
   }
 }
