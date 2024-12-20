@@ -21,4 +21,7 @@ export class HotelService {
     }
     return false;
   }
+  async findById(id: number): Promise<Hotel> {
+    return this.hotelRepo.findOneBy({ id });
+  }
 }

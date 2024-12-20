@@ -35,7 +35,6 @@ export class AuthController {
     @Body() hotelLoginDto: HotelLoginDto,
   ) {
     const hotelInfo = await this.authService.ValidateHotel(hotelLoginDto);
-    console.log(hotelInfo.password);
     const payload = { hotelId: hotelInfo.id };
     const { accessToken, refreshToken } =
       await this.authService.SignIn(payload);
@@ -43,7 +42,7 @@ export class AuthController {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return response.json({
+    return response.status(201).json({
       success: true,
       statusCode: 201,
       message: 'Hotel Logged in successfully',

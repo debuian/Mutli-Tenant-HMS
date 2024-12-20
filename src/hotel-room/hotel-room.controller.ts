@@ -23,7 +23,6 @@ export class HotelRoomController {
     @Body() createHotelRoomDto: CreateHotelRoomDto,
   ) {
     const hotelData = req.user;
-    console.log(hotelData);
     const HotelId = hotelData.hotelId;
     // Creating error for referance
     //**************** */ error hotel Td can be null ******************** solve

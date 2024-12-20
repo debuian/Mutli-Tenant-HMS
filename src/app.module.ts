@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
@@ -11,6 +11,8 @@ import { HotelModule } from './hotel/hotel.module';
 import { DatabaseConfig } from './global/config';
 import { HotelRoomModule } from './hotel-room/hotel-room.module';
 import { AuthModule } from './auth/auth.module';
+import { HotelGuestsModule } from './hotel-guests/hotel-guests.module';
+import { HotelRoomReservationsModule } from './hotel-room-reservations/hotel-room-reservations.module';
 
 @Module({
   imports: [
@@ -31,17 +33,20 @@ import { AuthModule } from './auth/auth.module';
     HotelModule,
     HotelRoomModule,
     AuthModule,
+    HotelGuestsModule,
+    HotelRoomReservationsModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_FILTER,
-      useClass: GobalExceptionFilter,
-    },
+    { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
     {
       provide: APP_INTERCEPTOR,
       useClass: GlobalResponseInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GobalExceptionFilter,
     },
   ],
 })
