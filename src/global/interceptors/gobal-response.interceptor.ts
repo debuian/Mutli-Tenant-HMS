@@ -22,6 +22,7 @@ export class GlobalResponseInterceptor<T> implements NestInterceptor<T, any> {
         if (!message) {
           message = 'Request Successful';
         }
+        console.log('ControllerResponseData', ControllerResponseData);
         const responsePayload: GlobalResponse<any> = {
           success: true,
           statusCode: status,

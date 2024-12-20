@@ -6,6 +6,8 @@ import {
   Request,
   UsePipes,
   ValidationPipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { HotelRoomService } from './hotel-room.service';
 import { CreateHotelRoomDto } from './dto/create-hotel-room.dto';
@@ -18,6 +20,7 @@ export class HotelRoomController {
   @Post('CreateRoom')
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
+  @UseInterceptors(ClassSerializerInterceptor)
   async CreateRoom(
     @Request() req,
     @Body() createHotelRoomDto: CreateHotelRoomDto,

@@ -39,11 +39,15 @@ import { HotelRoomReservationsModule } from './hotel-room-reservations/hotel-roo
   controllers: [AppController],
   providers: [
     AppService,
-    { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
     {
       provide: APP_INTERCEPTOR,
       useClass: GlobalResponseInterceptor,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+
     {
       provide: APP_FILTER,
       useClass: GobalExceptionFilter,

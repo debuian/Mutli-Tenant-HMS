@@ -58,7 +58,7 @@ export class GobalExceptionFilter implements ExceptionFilter {
     const responsePayload: GlobalResponse<any> = {
       success: false,
       statusCode: exception.status || defaultStatus,
-      message: defaultMessage || exception.message, //User Freindly Message
+      message: defaultMessage || exception.message,
       data: [],
       path: request.path,
       error: APIErrorObject,
