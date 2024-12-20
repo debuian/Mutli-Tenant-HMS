@@ -28,7 +28,10 @@ export class HotelRoomService {
     return hotelRoomInfo;
   }
   async findById(id: number): Promise<HotelRoom> {
-    return this.hotelRoomRepo.findOneBy({ id });
+    return this.hotelRoomRepo.findOne({
+      where: { id },
+      relations: ['hotel'],
+    });
   }
   async changeRoomStatus(id: number, status: string) {
     const hotelRoom = await this.findById(id);
