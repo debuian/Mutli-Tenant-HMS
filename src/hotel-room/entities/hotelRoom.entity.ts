@@ -2,7 +2,7 @@ import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
 import { Hotel } from 'src/hotel/entities/hotel.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-@Entity('hotelRooms')
+@Entity({ name: 'hotel_rooms' }) // Recommended: creates table hotel_rooms
 export class HotelRoom extends GobalBaseEntity {
   @Column()
   pricePerNight: number;

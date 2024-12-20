@@ -3,7 +3,7 @@ import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
 import { HotelRoom } from 'src/hotel-room/entities/hotelRoom.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
-@Entity('Hotels')
+@Entity({ name: 'hotels' })
 export class Hotel extends GobalBaseEntity {
   @Column()
   email: string;
