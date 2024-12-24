@@ -1,28 +1,37 @@
 import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
-import { HotelRoomReservation } from 'src/hotel-room-reservations/entities/hotel-room-reservation.entity';
-import { Hotel } from 'src/hotel/entities/hotel.entity';
+import { HotelRoomReservationEntity } from 'src/hotel-room-reservations/entities/hotel-room-reservation.entity';
+import { HotelEntity } from 'src/hotel/entities/hotel.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
+export enum HotelRoomStatus {
+  Available = 'AVAILABLE',
+  Booked = 'BOOKED',
+  Reserved = 'RESERVED',
+}
 @Entity({ name: 'hotel_rooms' }) // Recommended: creates table hotel_rooms
-export class HotelRoom extends GobalBaseEntity {
+export class HotelRoomEntity extends GobalBaseEntity {
   @Column()
   pricePerNight: number;
 
-  @Column({ default: 'Available ' })
+  @Column({
+    type: 'enum',
+    enum: HotelRoomStatus,
+    default: HotelRoomStatus.Available,
+  })
   status: string;
 
   @Column()
   capacity: number;
 
-  @ManyToOne(() => Hotel, (hotel) => hotel.hotelRooms, {
+  @ManyToOne(() => HotelEntity, (hotel) => hotel.hotelRooms, {
     nullable: false,
     onDelete: 'SET NULL',
   })
-  hotel: Hotel;
+  hotel: HotelEntity;
 
   @OneToMany(
-    () => HotelRoomReservation,
+    () => HotelRoomReservationEntity,
     (hotelRoomReservation) => hotelRoomReservation.hotelRoom,
   )
-  hotelRoomReservations: HotelRoomReservation[];
+  hotelRoomReservations: HotelRoomReservationEntity[];
 }

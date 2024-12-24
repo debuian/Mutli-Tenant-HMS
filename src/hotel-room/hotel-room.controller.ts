@@ -6,8 +6,7 @@ import {
   Request,
   UsePipes,
   ValidationPipe,
-  UseInterceptors,
-  ClassSerializerInterceptor,
+  Get,
 } from '@nestjs/common';
 import { HotelRoomService } from './hotel-room.service';
 import { CreateHotelRoomDto } from './dto/create-hotel-room.dto';
@@ -26,13 +25,19 @@ export class HotelRoomController {
   ) {
     const hotelData = req.user;
     const HotelId = hotelData.hotelId;
-    // Creating error for referance
-    //**************** */ error hotel Td can be null ******************** solve
-    // Error formating left for referance
-    // const HotelId = null;
+
     createHotelRoomDto.hotelId = HotelId;
     console.log(createHotelRoomDto);
     const result = await this.hotelRoomService.create(createHotelRoomDto);
     return { message: 'Hotel Room created Succesfully', HotelRoomInfo: result };
+  }
+
+  @Get('GetHotelRooms')
+  @UseGuards(JwtAuthGuard)
+  async GetHotelRoomsForHotel(@Request() req) {
+    const hotelData = req.user;
+    const HotelId = hotelData.hotelId;
+    const result = await this.hotelRoomService.getHotelRooms(HotelId);
+    return { message: 'Hotel Rooms for Hotel', HotelRooms: result };
   }
 }

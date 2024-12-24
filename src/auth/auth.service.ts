@@ -8,7 +8,7 @@ import { HotelService } from 'src/hotel/hotel.service';
 import { HotelLoginDto } from './dto/Hotellogin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { Hotel } from 'src/hotel/entities/hotel.entity';
+import { HotelEntity } from 'src/hotel/entities/hotel.entity';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -58,7 +58,7 @@ export class AuthService {
     };
   }
 
-  async ValidateHotel(hotelLoginDto: HotelLoginDto): Promise<Hotel> {
+  async ValidateHotel(hotelLoginDto: HotelLoginDto): Promise<HotelEntity> {
     const { email, password } = hotelLoginDto;
     const validHotel = await this.hotelSerivce.checkHotelExist(email);
     if (!validHotel) {

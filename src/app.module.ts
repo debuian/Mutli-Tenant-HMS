@@ -13,6 +13,10 @@ import { HotelRoomModule } from './hotel-room/hotel-room.module';
 import { AuthModule } from './auth/auth.module';
 import { HotelGuestsModule } from './hotel-guests/hotel-guests.module';
 import { HotelRoomReservationsModule } from './hotel-room-reservations/hotel-room-reservations.module';
+import { HotelTransactionsModule } from './hotel-transactions/hotel-transactions.module';
+import { HotelSalesOrdersModule } from './hotel-sales-orders/hotel-sales-orders.module';
+import { HotelInvoicesModule } from './hotel-invoices/hotel-invoices.module';
+import { HotelReceiptsModule } from './hotel-receipts/hotel-receipts.module';
 
 @Module({
   imports: [
@@ -35,6 +39,10 @@ import { HotelRoomReservationsModule } from './hotel-room-reservations/hotel-roo
     AuthModule,
     HotelGuestsModule,
     HotelRoomReservationsModule,
+    HotelTransactionsModule,
+    HotelSalesOrdersModule,
+    HotelInvoicesModule,
+    HotelReceiptsModule,
   ],
   controllers: [AppController],
   providers: [

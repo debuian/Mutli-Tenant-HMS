@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Hotel } from './entities/hotel.entity';
+import { HotelEntity } from './entities/hotel.entity';
 import { Repository } from 'typeorm';
 import { CreateHotelDto } from './dto/create-hotel.dto';
 
 @Injectable()
 export class HotelService {
-  constructor(@InjectRepository(Hotel) private hotelRepo: Repository<Hotel>) {}
+  constructor(
+    @InjectRepository(HotelEntity) private hotelRepo: Repository<HotelEntity>,
+  ) {}
 
-  async create(createHotelDto: CreateHotelDto): Promise<Hotel> {
+  async create(createHotelDto: CreateHotelDto): Promise<HotelEntity> {
     const newHotel = this.hotelRepo.create(createHotelDto);
     const hotelInfo = await this.hotelRepo.save(newHotel);
     return hotelInfo;
@@ -21,7 +23,7 @@ export class HotelService {
     }
     return false;
   }
-  async findById(id: number): Promise<Hotel> {
+  async findById(id: number): Promise<HotelEntity> {
     return this.hotelRepo.findOneBy({ id });
   }
 }

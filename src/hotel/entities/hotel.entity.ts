@@ -1,11 +1,14 @@
 import { Exclude } from 'class-transformer';
 import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
-import { HotelRoomReservation } from 'src/hotel-room-reservations/entities/hotel-room-reservation.entity';
-import { HotelRoom } from 'src/hotel-room/entities/hotelRoom.entity';
+import { HotelInvoiceEntity } from 'src/hotel-invoices/entities/hotel-invoice.entity';
+import { HotelRoomReservationEntity } from 'src/hotel-room-reservations/entities/hotel-room-reservation.entity';
+import { HotelRoomEntity } from 'src/hotel-room/entities/hotelRoom.entity';
+import { HotelSalesOrderEntity } from 'src/hotel-sales-orders/entities/hotel-sales-order.entity';
+import { HotelTransactionEntity } from 'src/hotel-transactions/entities/hotel-transaction.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'hotels' })
-export class Hotel extends GobalBaseEntity {
+export class HotelEntity extends GobalBaseEntity {
   @Column()
   email: string;
 
@@ -13,12 +16,27 @@ export class Hotel extends GobalBaseEntity {
   @Exclude()
   password: string;
 
-  @OneToMany(() => HotelRoom, (hotelRoom) => hotelRoom.hotel)
-  hotelRooms: HotelRoom[];
+  @OneToMany(() => HotelRoomEntity, (hotelRoom) => hotelRoom.hotel)
+  hotelRooms: HotelRoomEntity[];
 
   @OneToMany(
-    () => HotelRoomReservation,
+    () => HotelRoomReservationEntity,
     (hotelRoomReservation) => hotelRoomReservation.hotel,
   )
-  hotelRoomReservations: HotelRoomReservation[];
+  hotelRoomReservations: HotelRoomReservationEntity[];
+
+  @OneToMany(
+    () => HotelTransactionEntity,
+    (hotelTransaction) => hotelTransaction.hotel,
+  )
+  hotelTransactions: HotelTransactionEntity[];
+
+  @OneToMany(
+    () => HotelSalesOrderEntity,
+    (hotelSalesOrder) => hotelSalesOrder.hotel,
+  )
+  salesOrders: HotelSalesOrderEntity[];
+
+  @OneToMany(() => HotelInvoiceEntity, (hotelInvoice) => hotelInvoice.hotel)
+  hotelInvoice: HotelInvoiceEntity[];
 }

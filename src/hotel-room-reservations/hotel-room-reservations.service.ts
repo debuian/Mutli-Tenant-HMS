@@ -1,27 +1,28 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateHotelRoomReservationDto } from './dto/create-hotel-room-reservation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HotelRoomReservation } from './entities/hotel-room-reservation.entity';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { HotelRoomReservationEntity } from './entities/hotel-room-reservation.entity';
+import { Repository } from 'typeorm';
 import { HotelService } from 'src/hotel/hotel.service';
 import { HotelGuestsService } from 'src/hotel-guests/hotel-guests.service';
 import { HotelRoomService } from 'src/hotel-room/hotel-room.service';
-import e from 'express';
+import { HotelSalesOrdersService } from 'src/hotel-sales-orders/hotel-sales-orders.service';
+import { HotelRoomStatus } from 'src/hotel-room/entities/hotelRoom.entity';
 
 @Injectable()
 export class HotelRoomReservationsService {
   constructor(
-    @InjectRepository(HotelRoomReservation)
-    private readonly hotelRoomreservationRepo: Repository<HotelRoomReservation>,
+    @InjectRepository(HotelRoomReservationEntity)
+    private readonly hotelRoomreservationRepo: Repository<HotelRoomReservationEntity>,
     private hotelService: HotelService,
-    private HotelRoomService: HotelRoomService,
-    private HotelGuestsService: HotelGuestsService,
+    private hotelRoomService: HotelRoomService,
+    private hotelGuestsService: HotelGuestsService,
+    private hotelSalesOrdersService: HotelSalesOrdersService,
   ) {}
   async create(createHotelRoomReservationDto: CreateHotelRoomReservationDto) {
     const {
@@ -34,7 +35,106 @@ export class HotelRoomReservationsService {
 
     const checkInDate = new Date(check_in_date);
     const checkOutDate = new Date(check_out_date);
-    console.log(checkOutDate <= checkInDate);
+    await this.validateReservationDates(checkInDate, checkOutDate);
+    const hotelReservationInfo =
+      await this.hotelRoomreservationRepo.manager.transaction(
+        async (transactionalEntityManager) => {
+          const hotelRoom = await this.hotelRoomService.findById(hotelRoomId);
+          if (!hotelRoom) {
+            throw new NotFoundException('Hotel room not found', {
+              description: 'Room Lookup Failed',
+              cause: `Room with ID ${hotelRoomId} does not exist`,
+            });
+          }
+          if (hotelRoom.hotel.id !== hotelId) {
+            throw new UnauthorizedException(
+              'Cannot book room from different hotel',
+              {
+                description: 'Hotel Validation Failed',
+                cause: `Room ${hotelRoomId} does not belong to hotel ${hotelId}`,
+              },
+            );
+          }
+          if (hotelRoom.status.trim() !== HotelRoomStatus.Available) {
+            throw new BadRequestException(
+              'The room is not available for booking',
+              {
+                description: 'Room Status Conflict',
+                cause: `Room with ID ${hotelRoom.id} has status ${hotelRoom.status}`,
+              },
+            );
+          }
+
+          const [hotelResult, hotelGuestResult] = await Promise.allSettled([
+            this.hotelService.findById(hotelId),
+            this.hotelGuestsService.findById(hotelGuestId),
+          ]);
+          if (
+            hotelResult.status !== 'fulfilled' ||
+            hotelGuestResult.status !== 'fulfilled'
+          ) {
+            throw new BadRequestException(
+              'Failed to fetch hotel or guest information',
+              {
+                description: 'Lookup Failed',
+                cause: 'One or more required lookups failed',
+              },
+            );
+          }
+          if (!hotelResult.value) {
+            throw new NotFoundException('Hotel not found', {
+              description: 'Hotel Lookup Failed',
+              cause: `Hotel with ID ${hotelId} does not exist`,
+            });
+          }
+
+          if (!hotelGuestResult.value) {
+            throw new NotFoundException('Guest does not exist', {
+              description: 'Hotel Guest Lookup Failed',
+              cause: `Hotel Guest with ID ${hotelGuestId} does not exist`,
+            });
+          }
+          const hotelValue = hotelResult.value;
+          const hotelGuestValue = hotelGuestResult.value;
+
+          const newReservation = this.hotelRoomreservationRepo.create({
+            hotel: { id: hotelValue.id },
+            hotelRoom: { id: hotelRoom.id },
+            hotelGuest: { id: hotelGuestValue.id },
+            check_in_date,
+            check_out_date,
+          });
+          const savedReservation = await transactionalEntityManager.save(
+            HotelRoomReservationEntity,
+            newReservation,
+          );
+
+          const salesOrderDto = {
+            hotel_id: hotelValue.id,
+            hotel_room_reservation_id: savedReservation.id,
+            hotelSalesOrderDetails: [
+              { quantity: 1, unit_price: hotelRoom.pricePerNight },
+            ],
+            order_date: new Date(),
+            order_total_price: hotelRoom.pricePerNight,
+            order_status: 'PENDING',
+          };
+          const newSalesOrder =
+            await this.hotelSalesOrdersService.createWithTransaction(
+              salesOrderDto,
+              transactionalEntityManager,
+            );
+          await this.hotelRoomService.changeRoomStatusWithTransaction(
+            hotelRoom.id,
+            HotelRoomStatus.Booked,
+            transactionalEntityManager,
+          );
+          return savedReservation;
+        },
+      );
+    return hotelReservationInfo;
+  }
+  async validateReservationDates(checkInDate: Date, checkOutDate: Date) {
     if (checkOutDate <= checkInDate) {
       throw new BadRequestException('Invalid date range', {
         description: 'Date Validation Failed',
@@ -48,67 +148,6 @@ export class HotelRoomReservationsService {
         cause: 'Check-in date cannot be in the past',
       });
     }
-    const hotelRoom = await this.HotelRoomService.findById(hotelRoomId);
-    console.log(hotelRoom);
-    if (hotelRoom.hotel.id !== hotelId) {
-      throw new UnauthorizedException('Cannot book room from different hotel', {
-        description: 'Hotel Validation Failed',
-        cause: `Room ${hotelRoomId} does not belong to hotel ${hotelId}`,
-      });
-    }
-    if (!hotelRoom) {
-      throw new NotFoundException('Hotel room not found', {
-        description: 'Room Lookup Failed',
-        cause: `Room with ID ${hotelRoomId} does not exist`,
-      });
-    }
-    if (hotelRoom.status.trim() !== 'Available') {
-      throw new BadRequestException('The room is not available for booking', {
-        description: 'Room Status Conflict',
-        cause: `Room with ID ${hotelRoom.id} has status ${hotelRoom.status}`,
-      });
-    }
-
-    const [hotelResult, hotelGuestResult] = await Promise.allSettled([
-      this.hotelService.findById(hotelId),
-      this.HotelGuestsService.findById(hotelGuestId),
-    ]);
-    if (
-      hotelResult.status !== 'fulfilled' ||
-      hotelGuestResult.status !== 'fulfilled'
-    ) {
-      throw new BadRequestException(
-        'Failed to fetch hotel or guest information',
-        {
-          description: 'Lookup Failed',
-          cause: 'One or more required lookups failed',
-        },
-      );
-    }
-    if (!hotelResult.value) {
-      throw new NotFoundException('Hotel not found', {
-        description: 'Hotel Lookup Failed',
-        cause: `Hotel with ID ${hotelId} does not exist`,
-      });
-    }
-
-    if (!hotelGuestResult.value) {
-      throw new NotFoundException('Hotel guest not found', {
-        description: 'Hotel Guest Lookup Failed',
-        cause: `Hotel Guest with ID ${hotelGuestId} does not exist`,
-      });
-    }
-    const hotelValue = hotelResult.value;
-    const hotelGuestValue = hotelGuestResult.value;
-
-    const newReservation = this.hotelRoomreservationRepo.create({
-      hotel: hotelValue,
-      hotelRoom,
-      hotelGuest: hotelGuestValue,
-      check_in_date,
-      check_out_date,
-    });
-    this.HotelRoomService.changeRoomStatus(hotelRoom.id, 'booked');
-    return await this.hotelRoomreservationRepo.save(newReservation);
+    return true;
   }
 }

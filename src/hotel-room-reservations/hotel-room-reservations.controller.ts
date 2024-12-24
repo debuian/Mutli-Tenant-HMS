@@ -32,7 +32,7 @@ export class HotelRoomReservationsController {
     );
     return {
       message: 'Reservation Created Successfully',
-      data: hotelRoomReservation,
+      reservationData: hotelRoomReservation,
     };
   }
 }

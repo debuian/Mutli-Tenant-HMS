@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateHotelGuestDto } from './dto/create-hotel-guest.dto';
 import { UpdateHotelGuestDto } from './dto/update-hotel-guest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HotelGuest } from './entities/hotel-guest.entity';
+import { HotelGuestEntity } from './entities/hotel-guest.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class HotelGuestsService {
   constructor(
-    @InjectRepository(HotelGuest)
-    private readonly hotelGuestRepo: Repository<HotelGuest>,
+    @InjectRepository(HotelGuestEntity)
+    private readonly hotelGuestRepo: Repository<HotelGuestEntity>,
   ) {}
   async create(createHotelGuestDto: CreateHotelGuestDto) {
     const guestInfo = this.hotelGuestRepo.create(createHotelGuestDto);
@@ -31,7 +31,7 @@ export class HotelGuestsService {
   remove(id: number) {
     return `This action removes a #${id} hotelGuest`;
   }
-  async findById(id: number): Promise<HotelGuest> {
+  async findById(id: number): Promise<HotelGuestEntity> {
     return this.hotelGuestRepo.findOneBy({ id });
   }
 }

@@ -3,14 +3,14 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { HotelService } from 'src/hotel/hotel.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Hotel } from 'src/hotel/entities/hotel.entity';
+import { HotelEntity } from 'src/hotel/entities/hotel.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Hotel]),
+    TypeOrmModule.forFeature([HotelEntity]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
