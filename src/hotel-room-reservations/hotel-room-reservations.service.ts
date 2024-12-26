@@ -11,20 +11,18 @@ import { Repository } from 'typeorm';
 import { HotelService } from 'src/hotel/hotel.service';
 import { HotelGuestsService } from 'src/hotel-guests/hotel-guests.service';
 import { HotelRoomService } from 'src/hotel-room/hotel-room.service';
-import { HotelSalesOrdersService } from 'src/hotel-sales-orders/hotel-sales-orders.service';
 import { HotelRoomStatus } from 'src/hotel-room/entities/hotelRoom.entity';
 import { HotelSalesOrderStatus } from 'src/hotel-sales-orders/entities/hotel-sales-order.entity';
-import { HotelTransactionsService } from 'src/hotel-transactions/hotel-transactions.service';
 import {
   HotelTransactionStatus,
   HotelTransactionType,
 } from 'src/hotel-transactions/entities/hotel-transaction.entity';
 import { CreateHotelInvoiceDto } from 'src/hotel-invoices/dto/create-hotel-invoice.dto';
 import { HotelInvoiceStatus } from 'src/hotel-invoices/entities/hotel-invoice.entity';
-import { HotelInvoicesService } from 'src/hotel-invoices/hotel-invoices.service';
 import { CreateHotelSalesOrderDto } from 'src/hotel-sales-orders/dto/create-hotel-sales-order.dto';
 import { CreateHotelTransactionDto } from 'src/hotel-transactions/dto/create-hotel-transaction.dto';
 import { HotelBillingService } from 'src/hotel-billing/hotel-billing.service';
+import { RoomBookingDto } from 'src/hotel-billing/dto/room-booking.dto';
 
 @Injectable()
 export class HotelRoomReservationsService {
@@ -34,9 +32,7 @@ export class HotelRoomReservationsService {
     private hotelService: HotelService,
     private hotelRoomService: HotelRoomService,
     private hotelGuestsService: HotelGuestsService,
-    private hotelSalesOrdersService: HotelSalesOrdersService,
-    private hotelTransactionsService: HotelTransactionsService,
-    private hotelInoviceService: HotelInvoicesService,
+
     private readonly hotelBillingService: HotelBillingService,
   ) {}
   async create(createHotelRoomReservationDto: CreateHotelRoomReservationDto) {
@@ -138,45 +134,19 @@ export class HotelRoomReservationsService {
           const totalPrice = totalNumberOfNights * hotelRoom.pricePerNight;
           const currentDate = new Date();
 
-          const createSalesOrderDto: CreateHotelSalesOrderDto = {
+          const roomBookingDtO: RoomBookingDto = {
             hotel_id: hotelValue.id,
             hotel_room_reservation_id: savedReservation.id,
-            hotelSalesOrderDetails: [
-              {
-                quantity: totalNumberOfNights,
-                unit_price: hotelRoom.pricePerNight,
-              },
-            ],
             order_date: currentDate,
             order_total_price: totalPrice,
-            order_status: HotelSalesOrderStatus.Pending,
-          };
-
-          const createHotelTransactionDto: CreateHotelTransactionDto = {
-            hotelId: hotelValue.id,
-            created_at: currentDate,
-            transaction_type: HotelTransactionType.credit,
-            method: 'cash',
-            description: 'Room Reservation',
-            total_amount: totalPrice,
-            status: HotelTransactionStatus.Pending,
-          };
-
-          // Creating a inovice
-          const createHotelInoviceDto: CreateHotelInvoiceDto = {
-            hotel_id: hotelValue.id,
-            inovice_number: 'ASDAS',
-            status: HotelInvoiceStatus.Issued,
-            total_amount: totalPrice,
-            due_amount: totalPrice,
-            due_date: checkOutDate,
+            quantity: totalNumberOfNights,
+            unit_price: hotelRoom.pricePerNight,
+            invoiceDueDate: checkOutDate,
           };
 
           const HotelBillingInfo =
-            await this.hotelBillingService.processRoomBooking(
-              createSalesOrderDto,
-              createHotelTransactionDto,
-              createHotelInoviceDto,
+            await this.hotelBillingService.processRoomBookingBilling(
+              roomBookingDtO,
               transactionalEntityManager,
             );
 

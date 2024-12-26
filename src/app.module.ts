@@ -1,9 +1,8 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, RouterModule } from '@nestjs/core';
 import { GobalExceptionFilter } from './global/exceptions/gobal-exception.filter';
-import { AppRoutingModule } from './app-routing.modules';
 import { GlobalResponseInterceptor } from './global/interceptors/gobal-response.interceptor';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,10 +18,11 @@ import { HotelInvoicesModule } from './hotel-invoices/hotel-invoices.module';
 import { HotelReceiptsModule } from './hotel-receipts/hotel-receipts.module';
 import { HotelBillingModule } from './hotel-billing/hotel-billing.module';
 import { HotelPurchaseOrderModule } from './hotel-purchase-order/hotel-purchase-order.module';
+import { GobbalRoutes } from './global/routes/gobal.routes';
 
 @Module({
   imports: [
-    AppRoutingModule.forRootAsync({ fileExtension: 'routes.js' }),
+    RouterModule.register(GobbalRoutes),
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,

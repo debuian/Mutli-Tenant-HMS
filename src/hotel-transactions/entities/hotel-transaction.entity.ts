@@ -1,6 +1,7 @@
 import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
+import { HotelInvoiceEntity } from 'src/hotel-invoices/entities/hotel-invoice.entity';
 import { HotelEntity } from 'src/hotel/entities/hotel.entity';
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 
 export enum HotelTransactionType {
   credit = 'CREDIT', // This is a credit transaction money is added to the hotel account
@@ -19,6 +20,13 @@ export class HotelTransactionEntity extends GobalBaseEntity {
     onDelete: 'CASCADE',
   })
   hotel: HotelEntity;
+
+  @OneToOne(
+    () => HotelInvoiceEntity,
+    (hotelInvoice) => hotelInvoice.hotelTransaction,
+    { onDelete: 'CASCADE' },
+  )
+  hotelInvoice?: HotelInvoiceEntity;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

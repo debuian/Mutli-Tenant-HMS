@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HotelTransactionEntity } from './entities/hotel-transaction.entity';
+import {
+  HotelTransactionEntity,
+  HotelTransactionStatus,
+} from './entities/hotel-transaction.entity';
 import { CreateHotelTransactionDto } from './dto/create-hotel-transaction.dto';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -17,7 +20,7 @@ export class HotelTransactionsService {
   ) {
     try {
       const newHotelTransaction = this.hotelTransactionRepo.create({
-        hotel: { id: createHotelTransactionDto.hotelId },
+        hotel: { id: createHotelTransactionDto.hotel_id },
         created_at: createHotelTransactionDto.created_at,
         transaction_type: createHotelTransactionDto.transaction_type,
         method: createHotelTransactionDto.method,
@@ -42,5 +45,30 @@ export class HotelTransactionsService {
           transactionalEntityManager,
         ),
     );
+  }
+
+  async updateStatusWithTransaction(
+    id: number,
+    status: HotelTransactionStatus,
+    transactionalEntityManager: EntityManager,
+  ) {
+    // First perform the update
+    await transactionalEntityManager.update(HotelTransactionEntity, id, {
+      status,
+    });
+
+    // Then fetch the updated entity
+    const updatedTransaction = await transactionalEntityManager.findOne(
+      HotelTransactionEntity,
+      {
+        where: { id },
+      },
+    );
+
+    if (!updatedTransaction) {
+      throw new NotFoundException(`Transaction with ID ${id} not found`);
+    }
+
+    return updatedTransaction;
   }
 }

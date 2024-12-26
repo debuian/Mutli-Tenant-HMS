@@ -2,6 +2,7 @@ import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
 import { HotelPurchaseOrderEntity } from 'src/hotel-purchase-order/entities/hotel-purchase-order.entity';
 import { HotelReceiptEntity } from 'src/hotel-receipts/entities/hotel-receipt.entity';
 import { HotelSalesOrderEntity } from 'src/hotel-sales-orders/entities/hotel-sales-order.entity';
+import { HotelTransactionEntity } from 'src/hotel-transactions/entities/hotel-transaction.entity';
 import { HotelEntity } from 'src/hotel/entities/hotel.entity';
 import {
   Column,
@@ -20,7 +21,7 @@ export enum HotelInvoiceStatus {
   Issued = 'ISSUED',
 }
 
-export enum ReferenceType {
+export enum HotelInvoiceReferenceType {
   SalesOrder = 'SALES_ORDER',
   PurchaseOrder = 'PURCHASE_ORDER',
 }
@@ -55,11 +56,20 @@ export class HotelInvoiceEntity extends GobalBaseEntity {
   )
   @JoinColumn()
   hotelPurchaseOrder?: HotelPurchaseOrderEntity;
+
   @OneToMany(
     () => HotelReceiptEntity,
     (hotelReceipt) => hotelReceipt.hotelInvoice,
   )
   hotelReceipt: HotelReceiptEntity[];
+
+  @OneToOne(
+    () => HotelTransactionEntity,
+    (hotelTransaction) => hotelTransaction.hotelInvoice,
+    { onDelete: 'CASCADE' },
+  )
+  @JoinColumn() // Add this since Invoice will own the relationship
+  hotelTransaction: HotelTransactionEntity;
 
   @Column()
   invoice_number: string;
@@ -69,7 +79,7 @@ export class HotelInvoiceEntity extends GobalBaseEntity {
 
   @Column({
     type: 'enum',
-    enum: ReferenceType,
+    enum: HotelInvoiceReferenceType,
   })
   reference_type: string;
 

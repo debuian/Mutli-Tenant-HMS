@@ -4,7 +4,7 @@ import {
 } from '../entities/hotel-transaction.entity';
 
 export class CreateHotelTransactionDto {
-  hotelId: number;
+  hotel_id: number;
   created_at: Date;
   transaction_type: HotelTransactionType;
   method: string;
