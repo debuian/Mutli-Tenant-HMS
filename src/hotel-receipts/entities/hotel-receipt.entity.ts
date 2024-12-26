@@ -7,6 +7,10 @@ export class HotelReceiptEntity extends GobalBaseEntity {
   @ManyToOne(
     () => HotelInvoiceEntity,
     (hotelInvoice) => hotelInvoice.hotelReceipt,
+    {
+      onDelete: 'CASCADE',
+      nullable: false,
+    },
   )
   hotelInvoice: HotelInvoiceEntity;
 

@@ -9,6 +9,9 @@ import { HotelModule } from 'src/hotel/hotel.module';
 import { HotelGuestsModule } from 'src/hotel-guests/hotel-guests.module';
 import { HotelRoomModule } from 'src/hotel-room/hotel-room.module';
 import { HotelSalesOrdersModule } from 'src/hotel-sales-orders/hotel-sales-orders.module';
+import { HotelTransactionsModule } from 'src/hotel-transactions/hotel-transactions.module';
+import { HotelInvoicesModule } from 'src/hotel-invoices/hotel-invoices.module';
+import { HotelBillingModule } from 'src/hotel-billing/hotel-billing.module';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { HotelSalesOrdersModule } from 'src/hotel-sales-orders/hotel-sales-order
     HotelGuestsModule,
     HotelRoomModule,
     HotelSalesOrdersModule,
+    HotelTransactionsModule,
+    HotelInvoicesModule,
+    HotelBillingModule,
   ],
   controllers: [HotelRoomReservationsController],
   providers: [HotelRoomReservationsService, JwtStrategy, JwtAuthGuard],

@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
 import { HotelInvoiceEntity } from 'src/hotel-invoices/entities/hotel-invoice.entity';
+import { HotelPurchaseOrderEntity } from 'src/hotel-purchase-order/entities/hotel-purchase-order.entity';
 import { HotelRoomReservationEntity } from 'src/hotel-room-reservations/entities/hotel-room-reservation.entity';
 import { HotelRoomEntity } from 'src/hotel-room/entities/hotelRoom.entity';
 import { HotelSalesOrderEntity } from 'src/hotel-sales-orders/entities/hotel-sales-order.entity';
@@ -35,8 +36,14 @@ export class HotelEntity extends GobalBaseEntity {
     () => HotelSalesOrderEntity,
     (hotelSalesOrder) => hotelSalesOrder.hotel,
   )
-  salesOrders: HotelSalesOrderEntity[];
+  hotelSalesOrders: HotelSalesOrderEntity[];
 
   @OneToMany(() => HotelInvoiceEntity, (hotelInvoice) => hotelInvoice.hotel)
   hotelInvoice: HotelInvoiceEntity[];
+
+  @OneToMany(
+    () => HotelPurchaseOrderEntity,
+    (hotelPurchaseOrder) => hotelPurchaseOrder.hotel,
+  )
+  hotelPurchaseOrder: HotelPurchaseOrderEntity[];
 }

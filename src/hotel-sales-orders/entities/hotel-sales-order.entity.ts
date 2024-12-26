@@ -1,21 +1,29 @@
 import { GobalBaseEntity } from 'src/global/entity/BaseEntity';
 import { HotelRoomReservationEntity } from 'src/hotel-room-reservations/entities/hotel-room-reservation.entity';
 import { HotelEntity } from 'src/hotel/entities/hotel.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { HotelSalesOrderDetails } from './hotel-sales-order-detail.entity';
+import { HotelInvoiceEntity } from 'src/hotel-invoices/entities/hotel-invoice.entity';
 
 export enum HotelSalesOrderStatus {
   Pending = 'PENDING',
-  completed = 'COMPLETED',
+  Completed = 'COMPLETED',
 }
 @Entity({ name: 'hotel_sales_orders' })
 export class HotelSalesOrderEntity extends GobalBaseEntity {
-  @ManyToOne(() => HotelEntity, (hotel) => hotel.salesOrders)
+  @ManyToOne(() => HotelEntity, (hotel) => hotel.hotelSalesOrders, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   hotel: HotelEntity;
 
   @ManyToOne(
     () => HotelRoomReservationEntity,
     (hotelRoomReservation) => hotelRoomReservation.salesOrder,
+    {
+      onDelete: 'CASCADE',
+      nullable: false,
+    },
   )
   hotelRoomReservation: HotelRoomReservationEntity;
 
@@ -24,6 +32,16 @@ export class HotelSalesOrderEntity extends GobalBaseEntity {
     (hotelSalesOrderDetails) => hotelSalesOrderDetails.hotelSalesOrder,
   )
   hotelSalesOrderDetails: HotelSalesOrderDetails[];
+
+  @OneToOne(
+    () => HotelInvoiceEntity,
+    (hotelInvoice) => hotelInvoice.hotelSalesOrder,
+    {
+      onDelete: 'CASCADE',
+      nullable: true,
+    },
+  )
+  hotelInvoice: HotelInvoiceEntity;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   order_date: Date;

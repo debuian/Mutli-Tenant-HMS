@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHotelSalesOrderDto } from './dto/create-hotel-sales-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HotelSalesOrderEntity } from './entities/hotel-sales-order.entity';
@@ -60,6 +60,26 @@ export class HotelSalesOrdersService {
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  async updateStatusWithTransaction(
+    id: number,
+    status: string,
+    transactionalEntityManager: EntityManager,
+  ) {
+    const hotelSalesOrder = await transactionalEntityManager.findOne(
+      HotelSalesOrderEntity,
+      { where: { id } },
+    );
+    if (hotelSalesOrder) {
+      hotelSalesOrder.order_status = status;
+      return await transactionalEntityManager.save(hotelSalesOrder);
+    } else {
+      throw new NotFoundException('Sales Order not found', {
+        description: 'hotelSalesOrder Lookup Failed',
+        cause: `hotelSalesOrder with ID ${id} does not exist`,
+      });
     }
   }
 }

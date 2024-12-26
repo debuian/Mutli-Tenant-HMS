@@ -35,20 +35,30 @@ export class HotelRoomService {
   async changeRoomStatus(id: number, status: string) {
     const hotelRoom = await this.findById(id);
     hotelRoom.status = status;
-    return await this.hotelRoomRepo.save(hotelRoom);
+    return await this.hotelRoomRepo.manager.transaction(
+      async (transactionalEntityManager) =>
+        await this.changeRoomStatusWithTransaction(
+          id,
+          status,
+          transactionalEntityManager,
+        ),
+    );
   }
   async changeRoomStatusWithTransaction(
     id: number,
     status: string,
     transactionalEntityManager: EntityManager,
   ) {
-    return await this.hotelRoomRepo.manager.transaction(
-      async (transactionalEntityManager) => {
-        const hotelRoom = await this.hotelRoomRepo.findOne({ where: { id } });
-        hotelRoom.status = status;
-        return await transactionalEntityManager.save(hotelRoom);
-      },
+    const hotelRoom = await transactionalEntityManager.findOne(
+      HotelRoomEntity,
+      { where: { id } },
     );
+    if (hotelRoom) {
+      hotelRoom.status = status;
+      return await transactionalEntityManager.save(hotelRoom);
+    } else {
+      throw new Error('Room not found');
+    }
   }
   async getHotelRooms(hotelId: number): Promise<HotelRoomEntity[]> {
     return await this.hotelRoomRepo.find({

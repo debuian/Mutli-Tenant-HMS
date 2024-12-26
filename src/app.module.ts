@@ -17,6 +17,8 @@ import { HotelTransactionsModule } from './hotel-transactions/hotel-transactions
 import { HotelSalesOrdersModule } from './hotel-sales-orders/hotel-sales-orders.module';
 import { HotelInvoicesModule } from './hotel-invoices/hotel-invoices.module';
 import { HotelReceiptsModule } from './hotel-receipts/hotel-receipts.module';
+import { HotelBillingModule } from './hotel-billing/hotel-billing.module';
+import { HotelPurchaseOrderModule } from './hotel-purchase-order/hotel-purchase-order.module';
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { HotelReceiptsModule } from './hotel-receipts/hotel-receipts.module';
     HotelSalesOrdersModule,
     HotelInvoicesModule,
     HotelReceiptsModule,
+    HotelBillingModule,
+    HotelPurchaseOrderModule,
   ],
   controllers: [AppController],
   providers: [

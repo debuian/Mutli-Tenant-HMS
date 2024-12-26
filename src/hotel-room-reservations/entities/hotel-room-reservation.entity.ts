@@ -16,10 +16,7 @@ export class HotelRoomReservationEntity extends GobalBaseEntity {
   @ManyToOne(
     () => HotelRoomEntity,
     (hotelRoom) => hotelRoom.hotelRoomReservations,
-    {
-      onDelete: 'CASCADE',
-      nullable: false,
-    },
+    { onDelete: 'CASCADE', nullable: false },
   )
   hotelRoom: HotelRoomEntity;
 

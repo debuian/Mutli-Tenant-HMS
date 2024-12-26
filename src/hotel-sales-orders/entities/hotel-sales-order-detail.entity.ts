@@ -6,7 +6,11 @@ import { HotelSalesOrderEntity } from './hotel-sales-order.entity';
 export class HotelSalesOrderDetails extends GobalBaseEntity {
   @ManyToOne(
     () => HotelSalesOrderEntity,
-    (hotelSalesOrder) => hotelSalesOrder.hotelSalesOrderDetails, // Corrected relation name
+    (hotelSalesOrder) => hotelSalesOrder.hotelSalesOrderDetails,
+    {
+      onDelete: 'CASCADE',
+      nullable: false,
+    },
   )
   hotelSalesOrder: HotelSalesOrderEntity;
 

@@ -3,13 +3,14 @@ import { HotelEntity } from 'src/hotel/entities/hotel.entity';
 import { Entity, Column, ManyToOne } from 'typeorm';
 
 export enum HotelTransactionType {
-  credit = 'CREDIT',
-  debit = 'DEBIT',
+  credit = 'CREDIT', // This is a credit transaction money is added to the hotel account
+  debit = 'DEBIT', // This is a debit transaction money is removed from the hotel account
 }
 export enum HotelTransactionStatus {
   Pending = 'PENDING',
   success = 'SUCCESS',
-  failed = 'FAILED',
+  cancelled = 'CANCELLED',
+  active = 'ACTIVE',
 }
 @Entity({ name: 'hotel_transactions' })
 export class HotelTransactionEntity extends GobalBaseEntity {
@@ -27,6 +28,9 @@ export class HotelTransactionEntity extends GobalBaseEntity {
 
   @Column()
   method: string;
+
+  @Column()
+  description: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   total_amount: number;
