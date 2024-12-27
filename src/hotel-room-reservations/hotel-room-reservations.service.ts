@@ -44,7 +44,6 @@ export class HotelRoomReservationsService {
             hotelRoomId,
             transactionalEntityManager,
           );
-          console.log(hotelRoom);
           if (!hotelRoom) {
             throw new NotFoundException('Hotel room not found', {
               description: 'Room Lookup Failed',
@@ -69,7 +68,6 @@ export class HotelRoomReservationsService {
               },
             );
           }
-
           const [hotelResult, hotelGuestResult] = await Promise.allSettled([
             this.hotelService.findById(hotelId),
             this.hotelGuestsService.findById(hotelGuestId),
@@ -98,13 +96,13 @@ export class HotelRoomReservationsService {
               cause: `Hotel Guest with ID ${hotelGuestId} does not exist`,
             });
           }
-          const hotelValue = hotelResult.value;
-          const hotelGuestValue = hotelGuestResult.value;
+          const hotel = hotelResult.value;
+          const hotelGuest = hotelGuestResult.value;
           // Creating Reservation
           const newReservation = this.hotelRoomreservationRepo.create({
-            hotel: { id: hotelValue.id },
+            hotel: { id: hotel.id },
             hotelRoom: { id: hotelRoom.id },
-            hotelGuest: { id: hotelGuestValue.id },
+            hotelGuest: { id: hotelGuest.id },
             check_in_date,
             check_out_date,
           });
@@ -114,7 +112,7 @@ export class HotelRoomReservationsService {
           );
           await this.hotelRoomService.changeRoomStatusWithTransaction(
             hotelRoom.id,
-            { hotelId: hotelValue.id, status: HotelRoomStatus.Booked },
+            { hotelId: hotel.id, status: HotelRoomStatus.Booked },
             transactionalEntityManager,
           );
           // Setting Parameter of Billing Service or Sales order Transaction and Invoice
@@ -127,7 +125,7 @@ export class HotelRoomReservationsService {
           const currentDate = new Date();
 
           const roomBookingDtO: RoomBookinBillingDto = {
-            hotel_id: hotelValue.id,
+            hotel_id: hotel.id,
             hotel_room_reservation_id: savedReservation.id,
             order_date: currentDate,
             order_total_price: totalPrice,
