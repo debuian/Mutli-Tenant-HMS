@@ -36,7 +36,6 @@ export class HotelRoomReservationsService {
     } = createHotelRoomReservationDto;
     const checkInDate = new Date(check_in_date);
     const checkOutDate = new Date(check_out_date);
-
     await this.validateReservationDates(checkInDate, checkOutDate);
     const hotelReservationInfo =
       await this.hotelRoomreservationRepo.manager.transaction(

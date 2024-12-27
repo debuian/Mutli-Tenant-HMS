@@ -13,7 +13,6 @@ import {
 import { HotelRoomService } from './hotel-room.service';
 import { CreateHotelRoomDto } from './dto/create-hotel-room.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { HotelRoomStatus } from './entities/hotelRoom.entity';
 import { GobalIdDataType } from 'src/global/entity/BaseEntity';
 import { UpdateHotelRoomReservationDto } from 'src/hotel-room-reservations/dto/update-hotel-room-reservation.dto';
 import { UpdateHotelRoomDto } from './dto/update-hotel-room.dto';
