@@ -1,18 +1,9 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Request,
-  UsePipes,
-  ClassSerializerInterceptor,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { HotelRoomReservationsService } from './hotel-room-reservations.service';
 import { CreateHotelRoomReservationDto } from './dto/create-hotel-room-reservation.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
-@Controller('hotel-room-reservations')
+@Controller()
 export class HotelRoomReservationsController {
   constructor(
     private readonly hotelRoomReservationsService: HotelRoomReservationsService,

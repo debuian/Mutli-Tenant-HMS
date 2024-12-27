@@ -12,17 +12,9 @@ import { HotelService } from 'src/hotel/hotel.service';
 import { HotelGuestsService } from 'src/hotel-guests/hotel-guests.service';
 import { HotelRoomService } from 'src/hotel-room/hotel-room.service';
 import { HotelRoomStatus } from 'src/hotel-room/entities/hotelRoom.entity';
-import { HotelSalesOrderStatus } from 'src/hotel-sales-orders/entities/hotel-sales-order.entity';
-import {
-  HotelTransactionStatus,
-  HotelTransactionType,
-} from 'src/hotel-transactions/entities/hotel-transaction.entity';
-import { CreateHotelInvoiceDto } from 'src/hotel-invoices/dto/create-hotel-invoice.dto';
-import { HotelInvoiceStatus } from 'src/hotel-invoices/entities/hotel-invoice.entity';
-import { CreateHotelSalesOrderDto } from 'src/hotel-sales-orders/dto/create-hotel-sales-order.dto';
-import { CreateHotelTransactionDto } from 'src/hotel-transactions/dto/create-hotel-transaction.dto';
 import { HotelBillingService } from 'src/hotel-billing/hotel-billing.service';
-import { RoomBookingDto } from 'src/hotel-billing/dto/room-booking.dto';
+import { RoomBookinBillingDto } from 'src/hotel-billing/dto/room-booking.dto';
+import { UpdateHotelRoomDto } from 'src/hotel-room/dto/update-hotel-room.dto';
 
 @Injectable()
 export class HotelRoomReservationsService {
@@ -32,7 +24,6 @@ export class HotelRoomReservationsService {
     private hotelService: HotelService,
     private hotelRoomService: HotelRoomService,
     private hotelGuestsService: HotelGuestsService,
-
     private readonly hotelBillingService: HotelBillingService,
   ) {}
   async create(createHotelRoomReservationDto: CreateHotelRoomReservationDto) {
@@ -43,14 +34,18 @@ export class HotelRoomReservationsService {
       check_in_date,
       check_out_date,
     } = createHotelRoomReservationDto;
-
     const checkInDate = new Date(check_in_date);
     const checkOutDate = new Date(check_out_date);
+
     await this.validateReservationDates(checkInDate, checkOutDate);
     const hotelReservationInfo =
       await this.hotelRoomreservationRepo.manager.transaction(
         async (transactionalEntityManager) => {
-          const hotelRoom = await this.hotelRoomService.findById(hotelRoomId);
+          const hotelRoom = await this.hotelRoomService.findByIdWithTransaction(
+            hotelRoomId,
+            transactionalEntityManager,
+          );
+          console.log(hotelRoom);
           if (!hotelRoom) {
             throw new NotFoundException('Hotel room not found', {
               description: 'Room Lookup Failed',
@@ -98,7 +93,6 @@ export class HotelRoomReservationsService {
               cause: `Hotel with ID ${hotelId} does not exist`,
             });
           }
-
           if (!hotelGuestResult.value) {
             throw new NotFoundException('Guest does not exist', {
               description: 'Hotel Guest Lookup Failed',
@@ -121,7 +115,7 @@ export class HotelRoomReservationsService {
           );
           await this.hotelRoomService.changeRoomStatusWithTransaction(
             hotelRoom.id,
-            HotelRoomStatus.Booked,
+            { hotelId: hotelValue.id, status: HotelRoomStatus.Booked },
             transactionalEntityManager,
           );
           // Setting Parameter of Billing Service or Sales order Transaction and Invoice
@@ -129,12 +123,11 @@ export class HotelRoomReservationsService {
           // Creating Bills
           const differenceInTime =
             checkOutDate.getTime() - checkInDate.getTime();
-
           const totalNumberOfNights = differenceInTime / (1000 * 3600 * 24);
           const totalPrice = totalNumberOfNights * hotelRoom.pricePerNight;
           const currentDate = new Date();
 
-          const roomBookingDtO: RoomBookingDto = {
+          const roomBookingDtO: RoomBookinBillingDto = {
             hotel_id: hotelValue.id,
             hotel_room_reservation_id: savedReservation.id,
             order_date: currentDate,
@@ -159,14 +152,14 @@ export class HotelRoomReservationsService {
     if (checkOutDate <= checkInDate) {
       throw new BadRequestException('Invalid date range', {
         description: 'Date Validation Failed',
-        cause: 'Check-out date must be after check-in date',
+        cause: `Check-out date must be after check-in date. Check-out Date = ${checkOutDate} and Check-in Date = ${checkInDate} `,
       });
     }
 
     if (checkInDate < new Date()) {
       throw new BadRequestException('Invalid check-in date', {
         description: 'Date Validation Failed',
-        cause: 'Check-in date cannot be in the past',
+        cause: `Check-in date cannot be in the past.Date ${checkInDate}`,
       });
     }
     return true;

@@ -81,14 +81,14 @@ export class HotelInvoiceEntity extends GobalBaseEntity {
     type: 'enum',
     enum: HotelInvoiceReferenceType,
   })
-  reference_type: string;
+  reference_type: HotelInvoiceReferenceType;
 
   @Column({
     type: 'enum',
     enum: HotelInvoiceStatus,
     default: HotelInvoiceStatus.Pending,
   })
-  status: string;
+  status: HotelInvoiceStatus;
 
   @Column('decimal', { precision: 10, scale: 2 })
   total_amount: number;

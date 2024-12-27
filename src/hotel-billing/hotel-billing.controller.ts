@@ -2,7 +2,7 @@ import { Body, Controller, Param, Post } from '@nestjs/common';
 import { HotelBillingService } from './hotel-billing.service';
 import { PaymentDto } from './dto/room-booking.dto';
 
-@Controller('hotel-billing')
+@Controller()
 export class HotelBillingController {
   constructor(private readonly hotelBillingService: HotelBillingService) {}
 

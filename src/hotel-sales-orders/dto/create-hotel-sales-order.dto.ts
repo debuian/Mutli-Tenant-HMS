@@ -7,6 +7,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { HotelSalesOrderStatus } from '../entities/hotel-sales-order.entity';
 
 export class CreateHotelSalesOrderDetailDto {
   quantity: number;
@@ -32,5 +33,5 @@ export class CreateHotelSalesOrderDto {
   order_total_price: number;
 
   @IsString()
-  order_status: string;
+  order_status: HotelSalesOrderStatus;
 }

@@ -1,4 +1,4 @@
-export class RoomBookingDto {
+export class RoomBookinBillingDto {
   hotel_id: number;
   hotel_room_reservation_id: number;
   order_date: Date;

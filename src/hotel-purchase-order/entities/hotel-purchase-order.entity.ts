@@ -12,7 +12,10 @@ export enum HotelPurchaseOrderStatus {
 
 @Entity({ name: 'hotel_purchase_orders' })
 export class HotelPurchaseOrderEntity extends GobalBaseEntity {
-  @ManyToOne(() => HotelEntity, (hotel) => hotel.hotelPurchaseOrder)
+  @ManyToOne(() => HotelEntity, (hotel) => hotel.hotelPurchaseOrder, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   hotel: HotelEntity;
 
   @OneToOne(

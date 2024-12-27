@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHotelSalesOrderDto } from './dto/create-hotel-sales-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HotelSalesOrderEntity } from './entities/hotel-sales-order.entity';
+import {
+  HotelSalesOrderEntity,
+  HotelSalesOrderStatus,
+} from './entities/hotel-sales-order.entity';
 import { HotelSalesOrderDetails } from './entities/hotel-sales-order-detail.entity';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -65,7 +68,7 @@ export class HotelSalesOrdersService {
 
   async updateStatusWithTransaction(
     id: number,
-    status: string,
+    status: HotelSalesOrderStatus,
     transactionalEntityManager: EntityManager,
   ) {
     const hotelSalesOrder = await transactionalEntityManager.findOne(

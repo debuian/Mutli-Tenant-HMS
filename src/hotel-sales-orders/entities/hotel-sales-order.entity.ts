@@ -54,7 +54,7 @@ export class HotelSalesOrderEntity extends GobalBaseEntity {
     enum: HotelSalesOrderStatus,
     default: HotelSalesOrderStatus.Pending,
   })
-  order_status: string;
+  order_status: HotelSalesOrderStatus;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

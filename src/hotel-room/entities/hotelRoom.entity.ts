@@ -18,7 +18,7 @@ export class HotelRoomEntity extends GobalBaseEntity {
     enum: HotelRoomStatus,
     default: HotelRoomStatus.Available,
   })
-  status: string;
+  status: HotelRoomStatus;
 
   @Column()
   capacity: number;

@@ -1,12 +1,17 @@
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { GobalExceptionFilter } from './global/exceptions/gobal-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule, new ExpressAdapter());
-
+    const config = new DocumentBuilder()
+      .setTitle('Multi Tenant Hotel Managemnst System')
+      .setVersion('1.0.0')
+      .build();
+    const documnet = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, documnet);
     const APP_PORT = process.env.APP_PORT ?? 3000;
     await app.listen(APP_PORT);
     console.log(

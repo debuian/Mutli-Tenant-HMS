@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateHotelInvoiceDto } from 'src/hotel-invoices/dto/create-hotel-invoice.dto';
 import { HotelInvoicesService } from 'src/hotel-invoices/hotel-invoices.service';
 import { HotelPurchaseOrderService } from 'src/hotel-purchase-order/hotel-purchase-order.service';
@@ -9,7 +13,7 @@ import { HotelSalesOrdersService } from 'src/hotel-sales-orders/hotel-sales-orde
 import { CreateHotelTransactionDto } from 'src/hotel-transactions/dto/create-hotel-transaction.dto';
 import { HotelTransactionsService } from 'src/hotel-transactions/hotel-transactions.service';
 import { EntityManager } from 'typeorm';
-import { PaymentDto, RoomBookingDto } from './dto/room-booking.dto';
+import { PaymentDto, RoomBookinBillingDto } from './dto/room-booking.dto';
 import {
   HotelTransactionStatus,
   HotelTransactionType,
@@ -21,6 +25,8 @@ import {
 } from 'src/hotel-invoices/entities/hotel-invoice.entity';
 import { CreateHotelReceiptDto } from 'src/hotel-receipts/dto/create-hotel-receipt.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { table } from 'console';
+import { HotelReceiptEntity } from 'src/hotel-receipts/entities/hotel-receipt.entity';
 
 @Injectable()
 export class HotelBillingService {
@@ -35,7 +41,7 @@ export class HotelBillingService {
   ) {}
 
   async processRoomBookingBilling(
-    roomBookingDtO: RoomBookingDto,
+    roomBookingDtO: RoomBookinBillingDto,
     transactionalEntityManager: EntityManager,
   ) {
     const createSalesOrderDto: CreateHotelSalesOrderDto = {
@@ -101,7 +107,6 @@ export class HotelBillingService {
 
     return { updatedHotelSalesOrder, newHotelTransaction, newHotelInvoice };
   }
-  private async generateInvoiceNumber(hotelId: number) {}
 
   async processPaymentWithTransaction(
     paymentDto: PaymentDto,
@@ -112,14 +117,47 @@ export class HotelBillingService {
       {
         where: { id: paymentDto.invoiceId },
         relations: {
-          hotelTransaction: true, // Use the exact property name from your entity
+          hotelTransaction: true,
         },
       },
     );
     if (!hotelInvoice) {
       throw new NotFoundException('Invoice not found');
     }
+    if (paymentDto.paid_amount <= 0) {
+      throw new BadRequestException('Payment amount must be greater than zero');
+    }
+    console.log('due_amount', hotelInvoice.due_amount);
+    if (hotelInvoice.due_amount <= 0) {
+      throw new BadRequestException(
+        'Due amount is already zero , Invoice is already paid',
+      );
+    }
+    const oldReceipts = await transactionalEntityManager.find(
+      HotelReceiptEntity,
+      { where: { hotelInvoice: { id: paymentDto.invoiceId } } },
+    );
     const currentDate = new Date();
+    let total_paid_amount = paymentDto.paid_amount;
+    let newhotelInvoiceDueAmount =
+      hotelInvoice.due_amount - paymentDto.paid_amount;
+
+    if (oldReceipts?.length > 0) {
+      const oldReceiptsPaidAmunt = oldReceipts.reduce(
+        (accumulator, receipt) => {
+          return Number((accumulator + Number(receipt.paid_amount)).toFixed(2));
+        },
+        0,
+      );
+      console.log(oldReceiptsPaidAmunt);
+      total_paid_amount += oldReceiptsPaidAmunt;
+    }
+    console.log('total_paid_amount', total_paid_amount);
+
+    let hotelInvoiceStatus =
+      total_paid_amount < hotelInvoice.total_amount
+        ? HotelInvoiceStatus.Partial
+        : HotelInvoiceStatus.Paid;
 
     const createHotelRecipt: CreateHotelReceiptDto = {
       hotel_inovice_id: hotelInvoice.id,
@@ -133,20 +171,20 @@ export class HotelBillingService {
         transactionalEntityManager,
       );
 
-    const hotelInoviceStatus =
-      paymentDto.paid_amount < hotelInvoice.total_amount
-        ? HotelInvoiceStatus.Partial
-        : HotelInvoiceStatus.Paid;
-
+    const vlocity = await this.hotelInvoiceService.updateStatusWithTransaction(
+      hotelInvoice.id,
+      hotelInvoiceStatus,
+      transactionalEntityManager,
+    );
+    console.log('vlocity,', vlocity);
     const updateHotelInvoice =
-      await this.hotelInvoiceService.updateStatusWithTransaction(
+      await this.hotelInvoiceService.updateDueAmountWithTransaction(
         hotelInvoice.id,
-        hotelInoviceStatus,
+        newhotelInvoiceDueAmount,
         transactionalEntityManager,
       );
-
     const updateHotelTransactionStatus =
-      hotelInoviceStatus == HotelInvoiceStatus.Paid
+      hotelInvoiceStatus == HotelInvoiceStatus.Paid
         ? HotelTransactionStatus.success
         : HotelTransactionStatus.Pending;
     const updateHotelTransaction =
@@ -155,9 +193,6 @@ export class HotelBillingService {
         updateHotelTransactionStatus,
         transactionalEntityManager,
       );
-    console.log(updateHotelInvoice);
-    console.log(updateHotelTransaction);
-
     return { newHotelReceipt, updateHotelInvoice, updateHotelTransaction };
   }
   async processPayment(paymentDto: PaymentDto) {
@@ -170,4 +205,5 @@ export class HotelBillingService {
       },
     );
   }
+  private async generateInvoiceNumber(hotelId: number) {}
 }

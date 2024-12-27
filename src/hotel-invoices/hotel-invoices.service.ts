@@ -1,9 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHotelInvoiceDto } from './dto/create-hotel-invoice.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HotelInvoiceEntity } from './entities/hotel-invoice.entity';
+import {
+  HotelInvoiceEntity,
+  HotelInvoiceStatus,
+} from './entities/hotel-invoice.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { refCount } from 'rxjs';
+import { GobalIdDataType } from 'src/global/entity/BaseEntity';
 
 @Injectable()
 export class HotelInvoicesService {
@@ -56,19 +59,79 @@ export class HotelInvoicesService {
 
   async updateStatusWithTransaction(
     id: number,
-    status: string,
+    status: HotelInvoiceStatus,
+    transactionalEntityManager: EntityManager,
+  ) {
+    const HotelInvoice = await this.findByIdWithTransaction(
+      id,
+      transactionalEntityManager,
+    );
+    await transactionalEntityManager.update(HotelInvoiceEntity, id, {
+      status,
+    });
+    return await this.findByIdWithTransactionNoRelation(
+      id,
+      transactionalEntityManager,
+    );
+  }
+  async updateDueAmountWithTransaction(
+    id: number,
+    due_amount: number,
     transactionalEntityManager: EntityManager,
   ) {
     await transactionalEntityManager.update(HotelInvoiceEntity, id, {
-      status,
+      due_amount,
     });
     const updateHotelInvoice = await transactionalEntityManager.findOne(
       HotelInvoiceEntity,
       { where: { id } },
     );
-    if (!updateHotelInvoice) {
+    return await this.findByIdWithTransactionNoRelation(
+      id,
+      transactionalEntityManager,
+    );
+  }
+
+  async findByIdWithTransaction(
+    id: GobalIdDataType,
+    transactionalEntityManager: EntityManager,
+  ) {
+    const entity = await transactionalEntityManager.findOne(
+      HotelInvoiceEntity,
+      {
+        where: { id },
+        relations: {
+          hotelTransaction: true,
+          hotelSalesOrder: true,
+          hotelPurchaseOrder: true,
+          hotelReceipt: true,
+          hotel: true,
+        },
+      },
+    );
+
+    if (!entity) {
       throw new NotFoundException(`Invoice with ID ${id} not found`);
     }
-    return updateHotelInvoice;
+
+    return entity;
+  }
+
+  async findByIdWithTransactionNoRelation(
+    id: GobalIdDataType,
+    transactionalEntityManager: EntityManager,
+  ): Promise<HotelInvoiceEntity> {
+    const entity = await transactionalEntityManager.findOne(
+      HotelInvoiceEntity,
+      {
+        where: { id },
+      },
+    );
+
+    if (!entity) {
+      throw new NotFoundException(`Invoice with ID ${id} not found`);
+    }
+
+    return entity;
   }
 }

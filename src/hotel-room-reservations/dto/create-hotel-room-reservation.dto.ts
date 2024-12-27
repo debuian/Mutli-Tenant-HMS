@@ -1,9 +1,10 @@
 import { IsDate, IsNotEmpty } from 'class-validator';
+import { GobalIdDataType } from 'src/global/entity/BaseEntity';
 
 export class CreateHotelRoomReservationDto {
-  hotelId: number;
-  hotelRoomId: number;
-  hotelGuestId: number;
+  hotelId: GobalIdDataType;
+  hotelRoomId: GobalIdDataType;
+  hotelGuestId: GobalIdDataType;
   @IsDate()
   @IsNotEmpty()
   check_in_date: Date;
